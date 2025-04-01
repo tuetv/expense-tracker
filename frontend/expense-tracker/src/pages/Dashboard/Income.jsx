@@ -3,6 +3,9 @@ import DashboardLayout from '../../components/layouts/DashboardLayout'
 import IncomeOverview from '../../components/Income/IncomeOverview'
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
+import Modal from '../../components/layouts/Modal';
+import AddIncomeForm from '../../components/Income/AddIncomeForm';
+import toast from 'react-hot-toast';
 
 
 const Income = () => {
@@ -13,11 +16,11 @@ const Income = () => {
     show: false,
     data: null,
   });
-  const [ openAddIncomeModal, setOpenAddIncomeModal] = useState (false);
+  const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false);
 
   // Get all Income Details
   const fetchIncomeDetails = async () => {
-    if(loading) return;
+    if (loading) return;
 
     setLoading(true);
 
@@ -26,24 +29,57 @@ const Income = () => {
 
       );
 
-      if(response.data)
-      {
+      if (response.data) {
         setIncomeData(response.data);
       }
     } catch (error) {
       console.log("Something went wrong. Please try again.", error)
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
 
   // Handle Add Income
-  const handleAddIncome = async(income) => {
+  const handleAddIncome = async (income) => {
+    const { source, amount, date, icon } = income;
 
+
+    //Validation checks
+    if (!source.trim()) {
+      toast.error("Yêu cầu phải có nguồn gốc");
+      return;
+    }
+
+    if (!amount || isNaN(amount) || Number(amount) < 0) {
+      toast.error("Tiền phải là một số dương");
+      return;
+    }
+
+
+    if (!date) {
+      toast.error("Yêu cầu phải có ngày");
+      return;
+    }
+
+    try {
+      await axiosInstance.post(API_PATHS.INCOME.ADD_INCOME, {
+        source,
+        amount,
+        date,
+        icon,
+      });
+
+      setOpenAddIncomeModal(false);
+      toast.success("Thêm thu nhập thành công. hihi");
+      fetchIncomeDetails();
+    } catch (error) {
+      console.error("Lỗi thêm thu nhập. huhu",
+        error.response?.data?.messge || error.messge)
+    }
   };
 
   // Delete Income
-  const deleteIncome = async(id) => {
+  const deleteIncome = async (id) => {
 
   };
 
@@ -55,20 +91,27 @@ const Income = () => {
   useEffect(() => {
     fetchIncomeDetails();
 
-    return () => {};
+    return () => { };
   }, []);
   return (
     <DashboardLayout activeMenu="Income">
       <div className="">
         <div className="">
           <div className="">
-              <IncomeOverview
-                transactions={incomeData}
-                onAddIncome = {() => setOpenAddIncomeModal(true)}
-              />
-                {/* <IncomeOverview/> */}
+            <IncomeOverview
+              transactions={incomeData}
+              onAddIncome={() => setOpenAddIncomeModal(true)}
+            />
           </div>
         </div>
+
+        <Modal
+          isOpen={openAddIncomeModal}
+          onClose={() => setOpenAddIncomeModal(false)}
+          title="Add Income"
+        >
+          <AddIncomeForm onAddIncome={handleAddIncome} />
+        </Modal>
       </div>
     </DashboardLayout>
   )
