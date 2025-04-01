@@ -20,8 +20,8 @@ const AddIncomeForm = ({ onAddIncome }) => {
             <Input
                 value={income.source}
                 onChange={({ target }) => handleChange("source", target.value)}
-                label="Income Soure"
-                placeholder="Freelance, Salary, etc"
+                label="Nguồn thu"
+                placeholder="Lương, Thưởng, Hoa hồng..."
                 type="text"
             />
 

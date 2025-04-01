@@ -58,13 +58,13 @@ const Home = () => {
             color="bg-violet-400"
           />
           <InfoCard
-            icon={<IoMdCard />}
+            icon={<LuWalletMinimal />}
             label="Tổng thu nhập"
             value={addThousandsSeparator(dashboardData?.totalIncome || 0)}
             color="bg-orange-400"
           />
           <InfoCard
-            icon={<IoMdCard />}
+            icon={<LuHandCoins />}
             label="Tổng chi tiêu"
             value={addThousandsSeparator(dashboardData?.totalExpense || 0)}
             color="bg-red-400"
